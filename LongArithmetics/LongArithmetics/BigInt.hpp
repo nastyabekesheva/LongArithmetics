@@ -18,16 +18,16 @@
 class BigInt
 {
 private:
-    std::vector<uint64_t> _num;
+    std::vector<uint32_t> _num;
     
 public:
     BigInt();
     BigInt(std::string &num_in_hex);
     BigInt(const BigInt &other);
-    BigInt(std::vector<uint64_t> num);
+    BigInt(std::vector<uint32_t> num);
     //~BigInt();
     BigInt& operator=(const BigInt &other);
-    BigInt& operator=(std::string &num_in_hex); // idk if this is necessary
+    BigInt& operator=(std::string &num_in_hex); 
     
     friend std::ostream & operator << (std::ostream &out, const BigInt &BI);
     
@@ -36,25 +36,32 @@ public:
     BigInt operator*(BigInt &other);
     BigInt operator/(BigInt &other);
     
+    BigInt pow(BigInt &other);
+    
     BigInt operator<<(std::size_t i);
+    std::pair<BigInt, BigInt> LongDivMod(const BigInt& B) const;
     
-    
-    bool operator>(BigInt &other);
-    bool operator>=(BigInt &other);
-    bool operator<(BigInt &other);
-    bool operator<=(BigInt &other);
-    bool operator==(BigInt &other);
-    bool operator!=(BigInt &other);
+    bool operator>(BigInt &other) const;
+    bool operator>=(BigInt &other) const;
+    bool operator<(BigInt &other) const;
+    bool operator<=(BigInt &other) const;
+    bool operator==(BigInt &other) const;
+    bool operator!=(BigInt &other) const;
     
     
     void swap(BigInt &other);
     
+    void displayhex();
+
 private:
     int comp(BigInt &other) const;
     BigInt LongMulOneDigit(std::size_t other);
-    void LongShiftDigitsToHigh(std::size_t i);
+    //void LongShiftDigitsToHigh(std::size_t i);
     BigInt karatsuba(BigInt &other);
+
     void split(std::size_t pos, BigInt &high, BigInt &low);
+    std::vector<uint> to_binary() const;
+    
 };
 
 #endif /* BigInt_hpp */

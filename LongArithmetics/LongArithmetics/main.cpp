@@ -6,33 +6,63 @@
 //
 
 #include <iostream>
-
 #include <vector>
-#include <cstdint>
-#include <stdexcept>
-#include <cstdlib>
+#include <chrono>
 
 #include "BigInt.hpp"
 #include "BigInt.cpp"
-#define SYSTEM_SIZE 64
-#define HEX_ALPH "0123456789ABCDEF"
-#define HEX_MAX_SIZE 16
 
-//110919427519970072630961530469
-//95073794954398275251332343397
+void test(BigInt &a, BigInt &b)
+{
 
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Test addition.
+    auto additionStart = std::chrono::high_resolution_clock::now();
+    BigInt additionResult = a + b;
+    auto additionEnd = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> additionDuration = additionEnd - additionStart;
+    std::cout << "Addition Result: " << additionResult << std::endl;
+    std::cout << "Addition Execution Time: " << additionDuration.count() << " seconds" << std::endl;
+
+    // Test subtraction.
+    auto subtractionStart = std::chrono::high_resolution_clock::now();
+    BigInt subtractionResult = a - b;
+    auto subtractionEnd = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> subtractionDuration = subtractionEnd - subtractionStart;
+    std::cout << "Subtraction Result: " << subtractionResult << std::endl;
+    std::cout << "Subtraction Execution Time: " << subtractionDuration.count() << " seconds" << std::endl;
+
+    // Test multiplication.
+    auto multiplicationStart = std::chrono::high_resolution_clock::now();
+    BigInt multiplicationResult = a * b;
+    auto multiplicationEnd = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> multiplicationDuration = multiplicationEnd - multiplicationStart;
+    std::cout << "Multiplication Result: " << multiplicationResult << std::endl;
+    std::cout << "Multiplication Execution Time: " << multiplicationDuration.count() << " seconds" << std::endl;
+    
+    // Test power operation.
+    auto powerStart = std::chrono::high_resolution_clock::now();
+    BigInt powerResult = a.pow(b);  // Square num1, for example.
+    auto powerEnd = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> powerDuration = powerEnd - powerStart;
+    std::cout << "Power Result: " << powerResult << std::endl;
+    std::cout << "Power Execution Time: " << powerDuration.count() << " seconds" << std::endl;
+
+    // Measure the end time for all operations.
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "Total Execution Time for All Operations: " << duration.count() << " seconds" << std::endl;
+}
 
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
-    std::string s = "CCCCCCCCCCCCCCCCCCCC";
-    std::vector<uint32_t> m = {43690};
+    std::string s = "10";
     BigInt a(s);
-    s = "BBBBBBBBBBBBBBBBBBBB";
+
+    s = "5";
     BigInt b(s);
-    BigInt c = a*b;
-    std:: cout << a << std::endl << b << std::endl << c << std::endl;
+    test(a, b);
     
     return 0;
 }
