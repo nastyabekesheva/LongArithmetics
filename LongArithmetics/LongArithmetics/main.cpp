@@ -17,39 +17,34 @@ void test(BigInt &a, BigInt &b)
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    // Test addition.
-    auto additionStart = std::chrono::high_resolution_clock::now();
-    BigInt additionResult = a + b;
-    auto additionEnd = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> additionDuration = additionEnd - additionStart;
-    std::cout << "Addition Result: " << additionResult << std::endl;
-    std::cout << "Addition Execution Time: " << additionDuration.count() << " seconds" << std::endl;
+    auto addition_start = std::chrono::high_resolution_clock::now();
+    BigInt addition_result = a + b;
+    auto addition_end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> addition_duration = addition_end - addition_start;
+    std::cout << "Addition Result: " << addition_result << std::endl;
+    std::cout << "Addition Execution Time: " << addition_duration.count() << " seconds" << std::endl;
 
-    // Test subtraction.
-    auto subtractionStart = std::chrono::high_resolution_clock::now();
-    BigInt subtractionResult = a - b;
-    auto subtractionEnd = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> subtractionDuration = subtractionEnd - subtractionStart;
-    std::cout << "Subtraction Result: " << subtractionResult << std::endl;
-    std::cout << "Subtraction Execution Time: " << subtractionDuration.count() << " seconds" << std::endl;
+    auto subtraction_start = std::chrono::high_resolution_clock::now();
+    BigInt subtraction_result = a - b;
+    auto subtraction_end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> subtraction_duration = subtraction_end - subtraction_start;
+    std::cout << "Subtraction Result: " << subtraction_result << std::endl;
+    std::cout << "Subtraction Execution Time: " << subtraction_duration.count() << " seconds" << std::endl;
 
-    // Test multiplication.
-    auto multiplicationStart = std::chrono::high_resolution_clock::now();
-    BigInt multiplicationResult = a * b;
-    auto multiplicationEnd = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> multiplicationDuration = multiplicationEnd - multiplicationStart;
-    std::cout << "Multiplication Result: " << multiplicationResult << std::endl;
-    std::cout << "Multiplication Execution Time: " << multiplicationDuration.count() << " seconds" << std::endl;
+    auto multiplication_start = std::chrono::high_resolution_clock::now();
+    BigInt multiplication_result = a * b;
+    auto multiplication_end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> multiplication_duration = multiplication_end - multiplication_start;
+    std::cout << "Multiplication Result: " << multiplication_result << std::endl;
+    std::cout << "Multiplication Execution Time: " << multiplication_duration.count() << " seconds" << std::endl;
     
-    // Test power operation.
-    auto powerStart = std::chrono::high_resolution_clock::now();
-    BigInt powerResult = a.pow(b);  // Square num1, for example.
-    auto powerEnd = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> powerDuration = powerEnd - powerStart;
-    std::cout << "Power Result: " << powerResult << std::endl;
-    std::cout << "Power Execution Time: " << powerDuration.count() << " seconds" << std::endl;
+    auto power_start = std::chrono::high_resolution_clock::now();
+    BigInt power_result = a.pow(b);
+    auto power_end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> power_duration = power_end - power_start;
+    std::cout << "Power Result: " << power_result << std::endl;
+    std::cout << "Power Execution Time: " << power_duration.count() << " seconds" << std::endl;
 
-    // Measure the end time for all operations.
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
     std::cout << "Total Execution Time for All Operations: " << duration.count() << " seconds" << std::endl;
@@ -57,10 +52,9 @@ void test(BigInt &a, BigInt &b)
 
 
 int main(int argc, const char * argv[]) {
-    std::string s = "10";
+    std::string s = "aa";
     BigInt a(s);
-
-    s = "5";
+    s = "b";
     BigInt b(s);
     test(a, b);
     
