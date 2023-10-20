@@ -242,22 +242,22 @@ BigInt BigInt::operator*(BigInt &other)
 BigInt BigInt::operator/(BigInt &other)
 {
     BigInt quotient({0}), remainder(*this), result;
-    std::size_t k = _num.size();
+    std::size_t k = other.BitLenght();
     
     while (remainder >= other)
     {
-        std::size_t t = remainder._num.size();
+        std::size_t t = remainder.BitLenght();
         result = other << (t-k);
         if (t == 1)
             std::cout << "1" << std::endl;
-        if (remainder < result)
+        while (remainder < result)
         {
             --t;
             result = other << (t-k);
         }
-        BigInt h({8318}), l({8316});
-        if (l <= quotient && quotient <= h)
-            std::cout << "2" << std::endl;
+        //BigInt h({8318}), l({8316});
+        //if (l <= quotient && quotient <= h)
+            //std::cout << "2" << std::endl;
         
 
         remainder = remainder - result;
@@ -357,19 +357,21 @@ int BigInt::comp(BigInt &other) const
 {
     if (_num.size() > other._num.size())
     {
-        for(std::size_t i = _num.size(); i >= _num.size() - other._num.size() - 1; --i)
+        /*for(std::size_t i = _num.size(); i >= _num.size() - other._num.size() - 1; --i)
         {
             if (_num[i] > 0)
                 return 1;
-        }
+        }*/
+        return 1;
     }
     else if (_num.size() < other._num.size())
     {
-        for(std::size_t i = _num.size(); i >= other._num.size() - _num.size() - 1; --i)
+        /*for(std::size_t i = _num.size(); i >= other._num.size() - _num.size() - 1; --i)
         {
             if (other._num[i] > 0)
                 return -1;
-        }
+        }*/
+        return -1;
     }
     
     unsigned long i = _num.size() - 1;
@@ -470,6 +472,12 @@ void BigInt::split(std::size_t pos, BigInt &high, BigInt &low)
 }
  */
 
+std::size_t BigInt::BitLenght() const
+{
+    BigInt tmp({_num[_num.size()-1]});
+    std::vector<uint> bin = tmp.to_binary();
+    return ((_num.size() - 1) * 32) + bin.size();
+}
 
 
 void BigInt::swap(BigInt &other)

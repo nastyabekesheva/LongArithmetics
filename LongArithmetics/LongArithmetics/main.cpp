@@ -52,11 +52,12 @@ void test(BigInt &a, BigInt &b)
 
 
 int main(int argc, const char * argv[]) {
-    std::string s = "aa";
+    std::string s = "A";
     BigInt a(s);
-    s = "b";
+    s = "2";
     BigInt b(s);
-    test(a, b);
+    //test(a, b);
+    std::cout << a / b;
     
     return 0;
 }

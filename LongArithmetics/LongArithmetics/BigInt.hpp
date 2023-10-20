@@ -58,6 +58,7 @@ private:
     BigInt LongMulOneDigit(std::size_t other);
     //void LongShiftDigitsToHigh(std::size_t i);
     BigInt karatsuba(BigInt &other);
+    std::size_t BitLenght() const;
 
     void split(std::size_t pos, BigInt &high, BigInt &low);
     std::vector<uint> to_binary() const;
