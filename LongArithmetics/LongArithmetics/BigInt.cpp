@@ -66,8 +66,9 @@ std::vector<uint32_t> hex_to_uint32(std::string &num_in_hex)
     return num;
 }
 
-std::string uint32_to_hex(uint32_t &num)
+std::string uint32_to_hex(uint32_t &num, bool align)
 {
+    std::string res = "";
     std::string num_in_hex = "";
     for (int i = 7; i >= 0; --i)
     {
@@ -77,13 +78,23 @@ std::string uint32_to_hex(uint32_t &num)
     
 
     size_t pos = num_in_hex.find_first_not_of('0');
-    if (pos != std::string::npos) {
-        return num_in_hex.substr(pos);
-    } else {
-        return "0"; 
+    if (pos != std::string::npos)
+    {
+        res = num_in_hex.substr(pos);
+    }
+    else
+    {
+        res = "0";
+    }
+    if (align)
+    {
+        while (res.size() < 8)
+        {
+            res = "0" + res;
+        }
     }
     
-    return num_in_hex;
+    return res;
 }
 
 std::string vec_uint32_to_hex(std::vector<uint32_t> &num)
@@ -93,7 +104,7 @@ std::string vec_uint32_to_hex(std::vector<uint32_t> &num)
     
     for (size_t i = 0; i < num.size(); ++i)
     {
-        hex += uint32_to_hex(num[i]);
+        hex += uint32_to_hex(num[i], i != 0);
     }
     
     //reverse(hex.begin(), hex.end());
@@ -150,13 +161,15 @@ BigInt& BigInt::operator=(const BigInt &other)
     return *this;
 }
 
+std::vector<uint32_t> BigInt::num()
+{
+    return _num;
+}
+
 std::ostream & operator << (std::ostream &out, const BigInt &BI)
 {
-    for (std::size_t i = 0; i < BI._num.size(); ++i)
-    {
-        std::cout << "num[" << i << "] = " << BI._num[i] << std::endl;
-    }
-    
+    std::vector<uint32_t> num = BI._num;
+    std::cout << vec_uint32_to_hex(num) << std::endl;
     return out;
 }
 
@@ -206,11 +219,11 @@ BigInt BigInt::operator-(BigInt &other)
     }
 
     
-    uint64_t borrow = 0;
+    int32_t borrow = 0;
     int32_t tmp;
     for (std::size_t i = 0; i < _num.size(); ++i)
     {
-        tmp = _num[i] - other._num[i] - borrow;
+        tmp = (int32_t)_num[i] - (int32_t)other._num[i] - borrow;
         if (tmp >= 0)
         {
             new_num.push_back(tmp);
@@ -248,26 +261,45 @@ BigInt BigInt::operator/(BigInt &other)
     {
         std::size_t t = remainder.BitLenght();
         result = other << (t-k);
-        if (t == 1)
-            std::cout << "1" << std::endl;
+
         while (remainder < result)
         {
             --t;
             result = other << (t-k);
         }
-        //BigInt h({8318}), l({8316});
-        //if (l <= quotient && quotient <= h)
-            //std::cout << "2" << std::endl;
-        
 
         remainder = remainder - result;
         BigInt bit({static_cast<uint32_t>(std::pow(2, t - k))});
         quotient = quotient + bit;
     }
     
-    std::cout << "q=" << quotient << " r=" << remainder << std::endl;
     
-    return result;
+    return quotient;
+}
+
+BigInt BigInt::operator%(BigInt &other)
+{
+    BigInt quotient({0}), remainder(*this), result;
+    std::size_t k = other.BitLenght();
+    
+    while (remainder >= other)
+    {
+        std::size_t t = remainder.BitLenght();
+        result = other << (t-k);
+
+        while (remainder < result)
+        {
+            --t;
+            result = other << (t-k);
+        }
+        
+
+        remainder = remainder - result;
+        BigInt bit({static_cast<uint32_t>(std::pow(2, t - k))});
+        quotient = quotient + bit;
+    }
+    BigInt c({remainder._num[remainder._num.size()-1]});
+    return c;
 }
 
 BigInt BigInt::pow(BigInt &other)
@@ -357,20 +389,11 @@ int BigInt::comp(BigInt &other) const
 {
     if (_num.size() > other._num.size())
     {
-        /*for(std::size_t i = _num.size(); i >= _num.size() - other._num.size() - 1; --i)
-        {
-            if (_num[i] > 0)
-                return 1;
-        }*/
         return 1;
     }
     else if (_num.size() < other._num.size())
     {
-        /*for(std::size_t i = _num.size(); i >= other._num.size() - _num.size() - 1; --i)
-        {
-            if (other._num[i] > 0)
-                return -1;
-        }*/
+
         return -1;
     }
     

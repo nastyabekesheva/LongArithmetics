@@ -35,6 +35,7 @@ public:
     BigInt operator-(BigInt &other);
     BigInt operator*(BigInt &other);
     BigInt operator/(BigInt &other);
+    BigInt operator%(BigInt &other);
     
     BigInt pow(BigInt &other);
     
@@ -52,6 +53,7 @@ public:
     void swap(BigInt &other);
     
     void displayhex();
+    std::vector<uint32_t> num();
 
 private:
     int comp(BigInt &other) const;
