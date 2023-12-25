@@ -210,7 +210,7 @@ BigInt BigInt::operator-(BigInt &other)
     
     if ((*this) < other)
     {
-        throw std::runtime_error("((((((;");
+        std::cout << "cannot subtract these numbers" << std::endl;
     }
     
     if (_num.size() < other._num.size())
@@ -251,10 +251,10 @@ BigInt BigInt::operator-(BigInt &other)
 
 BigInt BigInt::operator*(BigInt &other)
 {
-    BigInt result, tmp;
-    for (std::size_t i = 0; i < _num.size(); ++i)
+    BigInt result({0}), tmp;
+    for (std::size_t i = 0; i < other._num.size(); ++i)
     {
-        tmp = LongMulOneDigit(other._num[i]);
+        tmp = this->LongMulOneDigit(other._num[i]);
         tmp = tmp.shift(i);
         result = result + tmp;
     }
@@ -296,20 +296,22 @@ BigInt BigInt::operator%(BigInt &other)
     while (remainder >= other)
     {
         std::size_t t = remainder.BitLenght();
-        result = other.shift(t-k);
+        result = other << (t-k);
 
-        while (remainder < result)
+        if (remainder < result)
         {
             --t;
-            result = other.shift(t-k);
+            result = other << (t-k);
         }
-        
 
         remainder = remainder - result;
-        BigInt bit({static_cast<uint32_t>(std::pow(2, t - k))});
+        //std::cout << remainder << std::endl;
+        BigInt bit({(1)});
+        bit = bit << (t - k);
         quotient = quotient + bit;
     }
-    //BigInt c({remainder._num[remainder._num.size()-1]});
+    
+    
     return remainder;
 }
 
@@ -377,9 +379,9 @@ BigInt BigInt::operator>>(std::size_t i)
         return result;
     }
     
-    for (std::size_t j = 0; j < _num.size() - 2; ++j)
+    for (std::size_t j = 0; j <= _num.size() - 2; ++j)
     {
-        result._num[j] = (_num[j] >> i_2) | ((_num[j+1] & ((1 << i_2) - 1)) << ((SYSTEM_SIZE) - i_2));
+        result._num[j] = (_num[j] >> i_2) | ((_num[j+1] & ((1 << i_2) - 1))) << ((SYSTEM_SIZE) - i_2);
     }
     result._num[_num.size() - 1] = (_num[_num.size() - 1] >> i_2);
     
@@ -489,15 +491,27 @@ std::vector<uint> BigInt::to_binary() const {
      else
      {
          std::vector<uint> bin;
-         for (std::size_t i = _num.size(); i > 0; --i) {
-             uint32_t num = _num[i - 1];
-             while (num > 0)
+         //std::cout << _num.size() - 2 << std::endl;
+         if (_num.size() > 1)
+         {
+             for (int i = 0; i <= _num.size() - 2; ++i)
              {
-                 bin.insert(bin.begin(), num % 2);
-                 num /= 2;
+                 uint32_t num = _num[i];
+                 for (std::size_t j = 0; j < 32; ++j)
+                 {
+                     bin.push_back(num % 2);
+                     num /= 2;
+                 }
              }
          }
-         reverse(bin.begin(), bin.end());
+
+         uint32_t num = _num[_num.size() - 1];
+         while (num > 0)
+         {
+             bin.push_back(num % 2);
+             num /= 2;
+         }
+         //reverse(bin.begin(), bin.end());
          return bin;
      }
     
@@ -505,7 +519,16 @@ std::vector<uint> BigInt::to_binary() const {
 
 BigInt BigInt::GCD(BigInt &other)
 {
+    
+    if ((*this) == other)
+    {
+        return (*this);
+    }
+    
+    //std::cout << "start a = " << (*this) << std::endl;
+    //std::cout << "start b = " << other << std::endl;
     BigInt d({1});
+    BigInt t({2});
     BigInt zero({0});
     BigInt a(*this);
     BigInt b(other);
@@ -523,21 +546,27 @@ BigInt BigInt::GCD(BigInt &other)
         d = d << 1;
     }
     
+    //std::cout << "a = " << a << std::endl;
+    //std::cout << "b = " << b << std::endl;
+    //std::cout << "d = " << d << std::endl;
     
     while (a.is_even())
     {
-        
         a = a >> 1;
     }
     
     
     while (b != zero)
     {
+        //std::cout << " - a = " << a << std::endl;
+        //std::cout << " - b = " << b << std::endl;
         while (b.is_even())
         {
+            //std::cout << b << std::endl;
             b = b >> 1;
-            //std::cout << 2 << std::endl;
+            
         }
+        //std::cout << " + b = " << b << std::endl;
         BigInt ac(a);
         BigInt bc(b);
         a = ac.min(bc);
@@ -548,9 +577,16 @@ BigInt BigInt::GCD(BigInt &other)
         else
             b = bc - ac;
         
+        //std::cout << " -- a = " << a << std::endl;
+        //std::cout << " -- b = " << b << std::endl;
+        
     }
-    d = d * a;
     
+    //std::cout << " final a = " << a << std::endl;
+    //std::cout << " final b = " << b << std::endl;
+    //std::cout << " d = " << d << std::endl;
+    d = a * d;
+    //std::cout << " final d = " << d << std::endl;
     return d;
 }
 
@@ -561,11 +597,11 @@ BigInt BigInt::BarrettReduction(BigInt &n, BigInt &mu)
     q = q * mu;
     q = q.KillLastDigits(n._num.size() + 1);
     BigInt tmp = q * n;
-    BigInt r = (*this) - tmp;
+    BigInt r = this->submod(tmp, n);
     while (r >= n)
     {
         //std::cout << r << std::endl;
-        r = r - n;
+        r = this->submod(n, n);
         
     }
     
@@ -576,12 +612,13 @@ BigInt BigInt::BarrettReduction(BigInt &n, BigInt &mu)
 BigInt BigInt::LongModPowerBarrett(BigInt &b, BigInt &n)
 {
     BigInt C({1});
-    BigInt A(*this);
+    BigInt A = (*this) % n;
     std::size_t tmp = 2*n._num.size();
     BigInt mu = (BigInt({1}).shift(tmp)) / n;
+    //std::cout << std::endl << "initial mu = " << mu << std::endl;
     std::vector<uint> B = b.to_binary();
     
-    
+    //std::cout << std::endl << "initial b = " << B << std::endl;
     for (std::size_t i = 0; i < B.size(); ++i)
     {
         if (B[i] == 1)
@@ -598,20 +635,21 @@ BigInt BigInt::LongModPowerBarrett(BigInt &b, BigInt &n)
     
 }
 
-BigInt BigInt::KillLastDigits(std::size_t i)
+BigInt BigInt::KillLastDigits(std::size_t i) const
 {
-    if (_num.size() < i)
+    BigInt a(*this);
+    if (a._num.size() < i)
     {
         return (*this);
     }
     for (std::size_t j = 0; j < i; ++j)
     {
-        _num.erase(_num.begin());
+        a._num.erase(a._num.begin());
     }
-    if (_num.size() == 0)
-        _num.push_back(0);
+    if (a._num.size() == 0)
+        a._num.push_back(0);
     
-    return (*this);
+    return a;
 }
 
 bool BigInt::is_even()
@@ -624,10 +662,10 @@ bool BigInt::is_even()
 
 BigInt BigInt::min(BigInt &other) const
 {
-    if (*this > other)
+    if ((*this) > other)
         return other;
     else
-        return *this;
+        return (*this);
 }
 
 std::size_t BigInt::BitLenght() const
@@ -655,4 +693,47 @@ void BigInt::remove_zeros()
         _num.pop_back();
         j--;
     }
+}
+
+
+BigInt BigInt::addmod(BigInt &other, BigInt &m)
+{
+    BigInt tmp = (*this) + other;
+    return (tmp % m);
+}
+
+BigInt BigInt::submod(BigInt &other, BigInt &m)
+{
+    if ((*this) < other)
+    {
+        BigInt tmp = other - (*this);
+        BigInt tmpmod = tmp % m;
+        return (m - tmpmod);
+    }
+    else
+    {
+        BigInt tmp = (*this) - other;
+        return (tmp % m);
+    }
+    
+}
+
+BigInt BigInt::mulmod(BigInt &other, BigInt &m)
+{
+    BigInt tmp = (*this) * other;
+    return (tmp % m);
+}
+
+BigInt BigInt::sqmod(BigInt &m)
+{
+    BigInt tmp = (*this) * (*this);
+    return (tmp % m);
+}
+
+BigInt BigInt::LCM(BigInt &other)
+{
+    BigInt tmp = (*this) * other;
+    BigInt gcd = GCD(other);
+    
+    return tmp / gcd;
 }

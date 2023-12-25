@@ -51,9 +51,14 @@ public:
     bool operator!=(BigInt &other) const;
     bool operator!=(int other) const;
     
+    BigInt addmod(BigInt &other, BigInt &m);
+    BigInt submod(BigInt &other, BigInt &m);
+    BigInt mulmod(BigInt &other, BigInt &m);
+    BigInt sqmod(BigInt &m);
     BigInt GCD(BigInt &other);
+    BigInt LCM(BigInt &other);
     BigInt BarrettReduction(BigInt &n, BigInt &mu);
-    BigInt KillLastDigits(std::size_t i);
+    BigInt KillLastDigits(std::size_t i) const;
     BigInt LongModPowerBarrett(BigInt &b, BigInt &n);
     
     void swap(BigInt &other);
@@ -64,6 +69,8 @@ public:
     bool is_even();
     BigInt shift(std::size_t i);
     BigInt min(BigInt &other) const;
+    
+
 
 private:
     int comp(BigInt &other) const;
